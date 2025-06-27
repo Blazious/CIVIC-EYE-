@@ -1,0 +1,303 @@
+
+/* Base styles and variables */
+:root {
+--primary: #1a73e8;
+--primary-dark: #0d5bb8;
+--secondary: #34a853;
+--error: #ea4335;
+--warning: #fbbc05;
+--dark: #202124;
+--light: #f8f9fa;
+--gray: #dadce0;
+--text: #3c4043;
+--text-light: #5f6368;
+--border-radius: 12px;
+--shadow: 0 4px 12px rgba(0,0,0,0.08);
+--transition: all 0.3s ease;
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+color: var(--text);
+line-height: 1.6;
+min-height: 100vh;
+padding: 20px;
+}
+
+/* Container for centering content */
+.container {
+max-width: 800px;
+margin: 0 auto;
+padding: 20px;
+}
+
+/* Header styles */
+header {
+text-align: center;
+margin-bottom: 30px;
+padding: 20px;
+}
+
+.logo {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 15px;
+margin-bottom: 15px;
+}
+
+.logo i {
+font-size: 2.5rem;
+color: var(--primary);
+background: rgba(26, 115, 232, 0.1);
+width: 70px;
+height: 70px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+}
+
+.logo h1 {
+font-size: 2.2rem;
+color: var(--dark);
+font-weight: 700;
+}
+
+.tagline {
+font-size: 1.1rem;
+color: var(--text-light);
+max-width: 500px;
+margin: 0 auto;
+}
+
+/* Card styles for forms */
+.card {
+background: white;
+border-radius: var(--border-radius);
+box-shadow: var(--shadow);
+padding: 30px;
+margin-bottom: 30px;
+transition: var(--transition);
+}
+
+.card:hover {
+box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.card-title {
+font-size: 1.5rem;
+margin-bottom: 25px;
+color: var(--dark);
+text-align: center;
+font-weight: 600;
+}
+
+/* Form elements */
+.form-group {
+margin-bottom: 20px;
+}
+
+label {
+display: block;
+margin-bottom: 8px;
+font-weight: 500;
+color: var(--text);
+}
+
+input, select, textarea {
+width: 100%;
+padding: 14px;
+border: 2px solid var(--gray);
+border-radius: 8px;
+font-size: 1rem;
+transition: var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+border-color: var(--primary);
+outline: none;
+box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.btn {
+display: block;
+width: 100%;
+padding: 15px;
+border: none;
+border-radius: 8px;
+font-size: 1.1rem;
+font-weight: 600;
+cursor: pointer;
+transition: var(--transition);
+text-align: center;
+}
+
+.btn-primary {
+background: var(--primary);
+color: white;
+}
+
+.btn-primary:hover {
+background: var(--primary-dark);
+}
+
+.btn-secondary {
+background: var(--secondary);
+color: white;
+margin-top: 15px;
+}
+
+.btn-secondary:hover {
+background: #2d8a47;
+}
+
+.btn-logout {
+background: #f1f3f4;
+color: var(--error);
+margin-top: 10px;
+}
+
+.btn-logout:hover {
+background: #e8eaed;
+}
+
+/* GPS status indicator */
+.gps-status {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 15px;
+border-radius: 8px;
+margin-bottom: 20px;
+background: #e8f0fe;
+}
+
+.gps-status i {
+font-size: 1.5rem;
+color: var(--primary);
+}
+
+.gps-success {
+background: #e6f4ea;
+}
+
+.gps-success i {
+color: var(--secondary);
+}
+
+.gps-error {
+background: #fce8e6;
+}
+
+.gps-error i {
+color: var(--error);
+}
+
+/* Image preview */
+.image-preview {
+display: flex;
+justify-content: center;
+margin: 20px 0;
+}
+
+.image-preview img {
+max-width: 100%;
+max-height: 300px;
+border-radius: 8px;
+border: 2px dashed var(--gray);
+display: none;
+}
+
+/* Location preview */
+.location-preview {
+display: flex;
+gap: 15px;
+margin-top: 15px;
+}
+
+.location-info {
+flex: 1;
+padding: 15px;
+background: #f8f9fa;
+border-radius: 8px;
+text-align: center;
+}
+
+.location-info h3 {
+font-size: 0.9rem;
+color: var(--text-light);
+margin-bottom: 5px;
+}
+
+.location-info p {
+font-size: 1.1rem;
+font-weight: 600;
+color: var(--dark);
+}
+
+/* Utility classes */
+.hidden {
+display: none;
+}
+
+.text-center {
+text-align: center;
+}
+
+.mt-20 {
+margin-top: 20px;
+}
+
+/* Response messages */
+.response-message {
+padding: 15px;
+border-radius: 8px;
+margin-top: 20px;
+text-align: center;
+font-weight: 500;
+}
+
+.success {
+background: #e6f4ea;
+color: var(--secondary);
+}
+
+.error {
+background: #fce8e6;
+color: var(--error);
+}
+
+/* Footer */
+footer {
+text-align: center;
+margin-top: 40px;
+color: var(--text-light);
+font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+.container {
+padding: 10px;
+}
+
+.card {
+padding: 20px;
+}
+
+.logo h1 {
+font-size: 1.8rem;
+}
+
+.location-preview {
+flex-direction: column;
+}
+}
