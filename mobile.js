@@ -1,5 +1,6 @@
 // === CONFIGURATION ===
-const BASE_URL = 'https://1c0f-129-222-187-46.ngrok-free.app';
+const BASE_URL = 'https://7113-129-222-187-46.ngrok-free.app';
+
 
 
 
