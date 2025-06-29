@@ -1,9 +1,6 @@
 // === CONFIGURATION ===
 const BASE_URL = 'https://7113-129-222-187-46.ngrok-free.app';
 
-
-
-
 // === DOM Elements ===
 const loginSection = document.getElementById('login-section');
 const reportSection = document.getElementById('report-section');
@@ -22,6 +19,7 @@ const reportResponse = document.getElementById('report-response');
 let accessToken = null;
 let refreshToken = null;
 let currentLocation = null;
+let roadName = null;
 
 // === Load Tokens on Page Load ===
 window.addEventListener('DOMContentLoaded', () => {
@@ -80,6 +78,7 @@ logoutBtn.addEventListener('click', () => {
     accessToken = null;
     refreshToken = null;
     currentLocation = null;
+    roadName = null;
 
     loginSection.classList.remove('hidden');
     reportSection.classList.add('hidden');
@@ -115,22 +114,10 @@ reportForm.addEventListener('submit', async (e) => {
     const description = document.getElementById('description').value;
     const imageFile = imageUpload.files[0];
 
-    if (!issueType) {
-        showMessage(reportResponse, 'Please select an issue type', 'error');
-        return;
-    }
-    if (!description) {
-        showMessage(reportResponse, 'Please add a description', 'error');
-        return;
-    }
-    if (!imageFile) {
-        showMessage(reportResponse, 'Please upload an image', 'error');
-        return;
-    }
-    if (!currentLocation) {
-        showMessage(reportResponse, 'Location not available. Please enable GPS.', 'error');
-        return;
-    }
+    if (!issueType) return showMessage(reportResponse, 'Please select an issue type', 'error');
+    if (!description) return showMessage(reportResponse, 'Please add a description', 'error');
+    if (!imageFile) return showMessage(reportResponse, 'Please upload an image', 'error');
+    if (!currentLocation) return showMessage(reportResponse, 'Location not available. Please enable GPS.', 'error');
 
     try {
         const submitBtn = reportForm.querySelector('button[type="submit"]');
@@ -143,6 +130,8 @@ reportForm.addEventListener('submit', async (e) => {
         formData.append('issue_type', issueType);
         formData.append('description', description);
         formData.append('image', imageFile);
+
+        if (roadName) formData.append('road_name', roadName);
 
         const response = await fetch(`${BASE_URL}/api/reports/`, {
             method: 'POST',
@@ -183,10 +172,7 @@ function getLocation() {
     if (!navigator.geolocation) {
         gpsStatus.innerHTML = `
             <i class="fas fa-exclamation-triangle"></i>
-            <div>
-                <h3>Location Error</h3>
-                <p>Geolocation not supported by your browser</p>
-            </div>
+            <div><h3>Location Error</h3><p>Geolocation not supported by your browser</p></div>
         `;
         gpsStatus.classList.add('gps-error');
         return;
@@ -194,14 +180,11 @@ function getLocation() {
 
     gpsStatus.innerHTML = `
         <i class="fas fa-satellite fa-spin"></i>
-        <div>
-            <h3>Getting Location</h3>
-            <p>Please allow location access...</p>
-        </div>
+        <div><h3>Getting Location</h3><p>Please allow location access...</p></div>
     `;
 
     navigator.geolocation.getCurrentPosition(
-        position => {
+        async position => {
             currentLocation = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
@@ -212,12 +195,12 @@ function getLocation() {
 
             gpsStatus.innerHTML = `
                 <i class="fas fa-map-marker-alt"></i>
-                <div>
-                    <h3>Location Acquired</h3>
-                    <p>Ready to submit report</p>
-                </div>
+                <div><h3>Location Acquired</h3><p>Ready to submit report</p></div>
             `;
             gpsStatus.classList.add('gps-success');
+
+            // Fetch road name from coordinates
+            roadName = await fetchRoadName(currentLocation.latitude, currentLocation.longitude);
         },
         error => {
             let errorMessage = 'Unable to retrieve your location.';
@@ -235,10 +218,7 @@ function getLocation() {
 
             gpsStatus.innerHTML = `
                 <i class="fas fa-exclamation-triangle"></i>
-                <div>
-                    <h3>Location Error</h3>
-                    <p>${errorMessage}</p>
-                </div>
+                <div><h3>Location Error</h3><p>${errorMessage}</p></div>
             `;
             gpsStatus.classList.add('gps-error');
         },
@@ -250,13 +230,22 @@ function getLocation() {
     );
 }
 
+// === Reverse Geocoding with OpenStreetMap ===
+async function fetchRoadName(lat, lon) {
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+        const data = await res.json();
+        return data.display_name || '';
+    } catch (err) {
+        console.warn('Failed to fetch road name:', err);
+        return '';
+    }
+}
+
 // === Show Temporary Messages ===
 function showMessage(element, message, type) {
     element.textContent = message;
     element.className = `response-message ${type}`;
     element.classList.remove('hidden');
-
-    setTimeout(() => {
-        element.classList.add('hidden');
-    }, 5000);
+    setTimeout(() => element.classList.add('hidden'), 5000);
 }
