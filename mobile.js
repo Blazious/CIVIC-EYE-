@@ -1,5 +1,5 @@
 // === CONFIGURATION ===
-const BASE_URL = 'https://6d0ade82e7be.ngrok-free.app';
+const BASE_URL = 'https://1c9fe1a1408e.ngrok-free.app';
 
 // === DOM Elements ===
 const loginSection = document.getElementById('login-section');
