@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicEye Admin Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; }
+        header { background-color: #1e293b; color: white; padding: 1rem; text-align: center; }
+        main { display: flex; height: 100vh; }
+        #report-table { width: 40%; overflow-y: auto; border-right: 1px solid #ccc; padding: 1rem; }
+        #report-table table { width: 100%; border-collapse: collapse; }
+        #report-table th, #report-table td { border: 1px solid #ddd; padding: 0.5rem; font-size: 0.9rem; }
+        #map { flex: 1; height: 100%; }
+        .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; color: white; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CivicEye Admin Dashboard</h1>
+    </header>
+    <main>
+        <section id="report-table">
+            <h2>Submitted Reports</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Time</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody id="report-body"></tbody>
+            </table>
+        </section>
+        <div id="map"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const BASE_URL = 'https://7113-129-222-187-46.ngrok-free.app';
+        const reportBody = document.getElementById('report-body');
+        const map = L.map('map').setView([-1.2921, 36.8219], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        async function fetchReports() {
+            try {
+                const token = localStorage.getItem('civiceye_access');
+                const res = await fetch(`${BASE_URL}/api/reports/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const reports = await res.json();
+                reports.forEach(report => {
+                    const row = document.createElement('tr');
+
+                    const locText = `${report.road_name || 'Loading...'}<br>${report.latitude.toFixed(5)}, ${report.longitude.toFixed(5)}`;
+
+                    row.innerHTML = `
+                        <td>${report.issue_type}</td>
+                        <td>${locText}</td>
+                        <td>${new Date(report.created_at).toLocaleString()}</td>
+                        <td><a href="${report.image.startsWith('http') ? report.image : BASE_URL + report.image}" target="_blank">View</a></td>
+
+                    `;
+                    reportBody.appendChild(row);
+
+                    const marker = L.marker([report.latitude, report.longitude]).addTo(map);
+                    marker.bindPopup(`
+                        <b>${report.issue_type}</b><br>
+                        ${report.description}<br>
+                        <small>${new Date(report.created_at).toLocaleString()}</small>
+                    `);
+
+                    // Optional: Reverse geocoding
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${report.latitude}&lon=${report.longitude}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            row.cells[1].innerHTML = `${data.display_name}<br>${report.latitude.toFixed(5)}, ${report.longitude.toFixed(5)}`;
+                        });
+                });
+            } catch (err) {
+                console.error('Failed to load reports', err);
+            }
+        }
+
+        fetchReports();
+    </script>
+</body>
+</html>
